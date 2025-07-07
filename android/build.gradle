@@ -19,3 +19,9 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+configurations.all {
+   resolutionStrategy {
+        force 'com.facebook.react:react-native:+'
+    }
+}
