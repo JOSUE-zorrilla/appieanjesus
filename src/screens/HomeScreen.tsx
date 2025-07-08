@@ -10,18 +10,24 @@ import {
   ImageBackground,
 } from 'react-native';
 
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type RootStackParamList = {
+  Splash: undefined;
+  Home: undefined;
+  Paises: undefined;
+};
+
 const items = [
-  // { label: 'NOSOTROS', icon: require('../../assets/iconosimagen/NOSOTROS.png') },
-  { label: 'DIRECTORIO', icon: require('../../assets/iconosimagen/directorio.png') },
-  // { label: 'ADMINISTRACIÓN', icon: require('../../assets/iconosimagen/ADMINISTRACION.png') },
+  { label: 'DIRECTORIO NACIONAL', icon: require('../../assets/iconosimagen/directorio.png') },
+  { label: 'DIRECTORIO EXTRANJERO', icon: require('../../assets/iconosimagen/extranjero.png') },
   { label: 'NOTICIAS', icon: require('../../assets/iconosimagen/noticias.png') },
   { label: 'EVENTOS', icon: require('../../assets/iconosimagen/eventos.png') },
   { label: 'RADIO ONLINE', icon: require('../../assets/iconosimagen/radio.png') },
   { label: 'TV ONLINE', icon: require('../../assets/iconosimagen/tv.png') },
   { label: 'BIBLIA', icon: require('../../assets/iconosimagen/biblia.png') },
-  // { label: 'SERMONES', icon: require('../../assets/iconosimagen/SERMONES.png') },
   { label: 'MÚSICA', icon: require('../../assets/iconosimagen/musica.png') },
-  // { label: 'VIDEOTECA', icon: require('../../assets/iconosimagen/videoteca.png') },
   { label: 'RECURSOS GRÁFICOS', icon: require('../../assets/iconosimagen/recursos.png') },
 ];
 
@@ -29,6 +35,8 @@ const screenWidth = Dimensions.get('window').width;
 const boxSize = (screenWidth - 80) / 3;
 
 export default function HomeScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
     <ImageBackground
       source={require('../../assets/imagen/fondo.png')}
@@ -49,9 +57,19 @@ export default function HomeScreen() {
         <ScrollView contentContainerStyle={styles.grid}>
           {items.map((item, idx) => (
             <View key={idx} style={styles.iconWrapper}>
-              <TouchableOpacity style={styles.iconBox}>
+              <TouchableOpacity
+                style={styles.iconBox}
+                onPress={() => {
+                  if (item.label === 'DIRECTORIO EXTRANJERO') {
+                    navigation.navigate('Paises'); // ✅ navegación correcta
+                  } else {
+                    console.log('Presionaste:', item.label);
+                  }
+                }}
+              >
                 <Image source={item.icon} style={styles.iconImage} resizeMode="contain" />
               </TouchableOpacity>
+
               <Text style={styles.iconText}>{item.label}</Text>
             </View>
           ))}
@@ -71,13 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   overlay: {
-  flex: 1,
-  
-},
-
-  container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   header: {
     backgroundColor: '#002C73',
@@ -89,11 +101,6 @@ const styles = StyleSheet.create({
     height: 110,
     marginBottom: 0,
     marginTop: 20,
-  },
-  subTitle: {
-    color: 'white',
-    fontSize: 15,
-    fontWeight: '600',
   },
   grid: {
     flexDirection: 'row',
