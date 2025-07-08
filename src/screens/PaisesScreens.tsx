@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import { TextInput } from 'react-native';
 
 interface Pais {
   id_paises: string;
@@ -29,6 +31,8 @@ export default function PaisesScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [paisSeleccionado, setPaisSeleccionado] = useState<string | null>(null);
   const navigation = useNavigation();
+  const [busquedaCiudad, setBusquedaCiudad] = useState('');
+const [loadingCiudades, setLoadingCiudades] = useState(false);
 
   useEffect(() => {
     axios
@@ -45,15 +49,19 @@ export default function PaisesScreen() {
   }, []);
 
   const abrirModalCiudades = async (idPais: string) => {
-    try {
-      setModalVisible(true);
-      setPaisSeleccionado(idPais);
-      const response = await axios.get(`https://ieanjesus.org.ec/api/ciudades?id_pais=${idPais}`);
-      setCiudades(response.data.data);
-    } catch (error) {
-      console.error('Error al cargar ciudades:', error);
-    }
-  };
+  try {
+    setLoadingCiudades(true); // 🟡 empieza cargando
+    setModalVisible(true);
+    setPaisSeleccionado(idPais);
+    const response = await axios.get(`https://ieanjesus.org.ec/api/ciudades?id_pais=${idPais}`);
+    setCiudades(response.data.data);
+  } catch (error) {
+    console.error('Error al cargar ciudades:', error);
+  } finally {
+    setLoadingCiudades(false); // 🟢 termina la carga
+  }
+};
+
 
   if (loading) {
     return (
@@ -62,6 +70,14 @@ export default function PaisesScreen() {
       </View>
     );
   }
+const ciudadesFiltradas = ciudades.filter((ciudad) => {
+  const texto = busquedaCiudad.toLowerCase();
+  return (
+    ciudad.nombre.toLowerCase().includes(texto) ||
+    ciudad.pastor.toLowerCase().includes(texto)
+  );
+});
+
 
   return (
     <ImageBackground
@@ -72,8 +88,9 @@ export default function PaisesScreen() {
       <SafeAreaView style={styles.overlay}>
         <View style={styles.header}>
           <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>⬅️</Text>
-          </Pressable>
+  <Icon name="arrow-left" size={20} color="white" />
+</Pressable>
+
           <Text style={styles.headerTitle}>DIRECTORIO EXTRANJERO</Text>
         </View>
 
@@ -106,8 +123,16 @@ export default function PaisesScreen() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Ciudades</Text>
-              <FlatList
-                data={ciudades}
+                {/* 🔽 Aquí pones el TextInput antes del FlatList */}
+                <TextInput
+                  placeholder="Buscar ciudad..."
+                  placeholderTextColor="#888"
+                  style={styles.buscador}
+                  value={busquedaCiudad}
+                  onChangeText={setBusquedaCiudad}
+                />
+                        <FlatList
+                data={ciudadesFiltradas}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                   <View style={styles.cityCard}>
@@ -116,18 +141,27 @@ export default function PaisesScreen() {
                       <Text style={styles.name}>{item.nombre}</Text>
                       <Text style={styles.misionero}>Pastor: {item.pastor}</Text>
 
-                      <View style={styles.row}>
-                        <Text
-                          style={styles.link}
-                          onPress={() => Linking.openURL(`https://wa.me/${item.telefono}`)}
-                        >
-                          📞 WhatsApp
-                        </Text>
-                      </View>
+                                                                <View style={styles.row}>
+                            <Pressable
+                              onPress={() => Linking.openURL(`https://wa.me/${item.telefono}`)}
+                              style={styles.iconCircleWhatsApp}
+                            >
+                              <Icon name="whatsapp" size={18} color="#ffffff" />
+                            </Pressable>
 
-                      <View style={styles.row}>
-                        <Text style={styles.gps}>📍 Ubicación: {item.latitude}, {item.longitude}</Text>
-                      </View>
+                            <Pressable
+                              onPress={() =>
+                                Linking.openURL(
+                                  `https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`
+                                )
+                              }
+                              style={styles.iconCircleGPS}
+                            >
+                              <Icon name="map-marker-alt" size={18} color="#ffffff" />
+                            </Pressable>
+                          </View>
+
+
                     </View>
                   </View>
                 )}
@@ -155,7 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#002C73',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 40,
+    paddingVertical: 60,
     position: 'relative',
   },
   headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold' },
@@ -213,20 +247,50 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 10,
   },
-  backButton: {
-    position: 'absolute',
-    left: 15,
-    top: 10,
-    zIndex: 10,
-    padding: 8,
-  },
-  backText: {
-    fontSize: 20,
-    color: 'white',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
+  
+ backButton: {
+  position: 'absolute',
+  left: 16,
+  top: 50,
+  padding: 8,
+  backgroundColor: 'rgba(255,255,255,0.2)', // opcional: fondo suave
+  borderRadius: 8,
+},
+
+// elimina backText si ya no lo usas
+ row: {
+  flexDirection: 'row',
+  justifyContent: 'flex-end', // alinea a la derecha
+  alignItems: 'center',
+  marginTop: 10,
+  gap: 0, // o usa marginRight en los botones
+},
+
+   iconButton: {
+  paddingHorizontal: 10,
+  paddingVertical: 5,
+},
+iconCircleWhatsApp: {
+  backgroundColor: '#25D366',// whatsapp
+  padding: 10,
+  borderRadius: 5,
+  marginRight: 5,
+},
+
+iconCircleGPS: {
+  backgroundColor: '#4285F4', // azul estilo Google Maps
+  padding: 10,
+  borderRadius: 5,
+},
+buscador: {// buscador de ciudades
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 8,
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  marginBottom: 10,
+  color: '#000',
+},
+
+
 });
