@@ -12,9 +12,12 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity,  } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useState } from 'react';
 
 export default function TVOnlineScreen() {
   const navigation = useNavigation();
+const [isFullScreen, setIsFullScreen] = React.useState(false);
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -32,14 +35,20 @@ export default function TVOnlineScreen() {
 
 
       {/* WebView para el iframe */}
-      <View style={styles.videoWrapper}>
-        <WebView
-          source={{ uri: 'https://ecuatel.com/tvs/iglesia/' }}
-          allowsInlineMediaPlayback
-          javaScriptEnabled
-          style={styles.video}
-        />
-      </View>
+  {/* WebView para el iframe */}
+{/* WebView para el iframe */}
+<View style={styles.videoWrapper}>
+  <WebView
+    source={{ uri: 'https://ecuatel.com/tvs/iglesia/' }}
+    allowsInlineMediaPlayback
+    javaScriptEnabled
+    style={styles.video}
+  />
+</View>
+
+
+
+
 
       {/* Contenido */}
       <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -119,10 +128,7 @@ backButton: {
 },
 
 
-  videoWrapper: {
-    height: 200,
-    backgroundColor: '#000',
-  },
+ 
   video: {
     flex: 1,
   },
@@ -195,11 +201,20 @@ headerTitle: {
 },
 headerCenter: {
   position: 'absolute',
-  top: 50,
+  top: 45,
   left: 0,
   right: 0,
   alignItems: 'center',
   justifyContent: 'center',
+},
+
+
+
+
+videoWrapper: {
+  height: 200,
+  backgroundColor: '#000',
+  zIndex: 1,
 },
 
 });

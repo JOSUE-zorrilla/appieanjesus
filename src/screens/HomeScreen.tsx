@@ -18,6 +18,7 @@ type RootStackParamList = {
   Home: undefined;
   Paises: undefined;
    TVOnline: undefined;
+     RadioOnline: undefined; 
 };
 
 const items = [
@@ -65,7 +66,10 @@ export default function HomeScreen() {
                     navigation.navigate('Paises'); // ✅ navegación correcta
                     } else if (item.label === 'TV ONLINE') {
                   navigation.navigate('TVOnline');
-                }  else {
+                } 
+                else if (item.label === 'RADIO ONLINE') {
+                    navigation.navigate('RadioOnline');
+                } else {
                     console.log('Presionaste:', item.label);
                   }
                 }}

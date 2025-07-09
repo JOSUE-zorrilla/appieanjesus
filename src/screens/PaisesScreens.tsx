@@ -50,28 +50,26 @@ const [loadingCiudades, setLoadingCiudades] = useState(false);
       });
   }, []);
 
-  const abrirModalCiudades = async (idPais: string) => {
+const abrirModalCiudades = async (idPais: string) => {
   try {
-    setLoadingCiudades(true); // 🟡 empieza cargando
+    setLoadingCiudades(true);
     setModalVisible(true);
     setPaisSeleccionado(idPais);
+
+    setCiudades([]); // ✅ limpia antes de cargar
+
     const response = await axios.get(`https://ieanjesus.org.ec/api/ciudades?id_pais=${idPais}`);
     setCiudades(response.data.data);
   } catch (error) {
     console.error('Error al cargar ciudades:', error);
   } finally {
-    setLoadingCiudades(false); // 🟢 termina la carga
+    setLoadingCiudades(false);
   }
 };
 
 
-  if (loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#002C73" />
-      </View>
-    );
-  }
+
+  
 const ciudadesFiltradas = ciudades.filter((ciudad) => {
   const texto = busquedaCiudad.toLowerCase();
   return (
@@ -79,6 +77,20 @@ const ciudadesFiltradas = ciudades.filter((ciudad) => {
     ciudad.pastor.toLowerCase().includes(texto)
   );
 });
+if (loading) {
+  return (
+    <ImageBackground
+      source={require('../../assets/imagen/fondo.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#002C73" />
+        <Text style={styles.loadingText}>Cargando países...</Text>
+      </View>
+    </ImageBackground>
+  );
+}
 
 
   return (
@@ -88,12 +100,14 @@ const ciudadesFiltradas = ciudades.filter((ciudad) => {
       resizeMode="cover"
     >
       <SafeAreaView style={styles.overlay}>
-        <View style={styles.header}>
+         <View style={styles.headerContainer}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Icon name="arrow-left" size={18} color="#002C73" />
           </TouchableOpacity>
 
-          <Text style={styles.headerTitle}>DIRECTORIO EXTRANJERO</Text>
+         <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>DIRECTORIO EXTRANJERO</Text>
+          </View>
         </View>
 
         <FlatList
@@ -133,41 +147,43 @@ const ciudadesFiltradas = ciudades.filter((ciudad) => {
                   value={busquedaCiudad}
                   onChangeText={setBusquedaCiudad}
                 />
-                        <FlatList
-                data={ciudadesFiltradas}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <View style={styles.cityCard}>
-                    <Image source={{ uri: item.foto }} style={styles.cityImage} />
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.name}>{item.nombre}</Text>
-                      <Text style={styles.misionero}>Pastor: {item.pastor}</Text>
+                {loadingCiudades ? (
+  <View style={styles.loadingCiudadesContainer}>
+    <ActivityIndicator size="large" color="#002C73" />
+    <Text style={styles.loadingText}>Cargando ciudades...</Text>
+  </View>
+) : (
+  <FlatList
+    data={ciudadesFiltradas}
+    keyExtractor={(item) => item.id.toString()}
+    renderItem={({ item }) => (
+      <View style={styles.cityCard}>
+        <Image source={{ uri: item.foto }} style={styles.cityImage} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.name}>{item.nombre}</Text>
+          <Text style={styles.misionero}>Pastor: {item.pastor}</Text>
+          <View style={styles.row}>
+            <Pressable
+              onPress={() => Linking.openURL(`https://wa.me/${item.telefono}`)}
+              style={styles.iconCircleWhatsApp}
+            >
+              <Icon name="whatsapp" size={18} color="#ffffff" />
+            </Pressable>
+            <Pressable
+              onPress={() =>
+                Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`)
+              }
+              style={styles.iconCircleGPS}
+            >
+              <Icon name="map-marker-alt" size={18} color="#ffffff" />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    )}
+  />
+)}
 
-                                                                <View style={styles.row}>
-                            <Pressable
-                              onPress={() => Linking.openURL(`https://wa.me/${item.telefono}`)}
-                              style={styles.iconCircleWhatsApp}
-                            >
-                              <Icon name="whatsapp" size={18} color="#ffffff" />
-                            </Pressable>
-
-                            <Pressable
-                              onPress={() =>
-                                Linking.openURL(
-                                  `https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`
-                                )
-                              }
-                              style={styles.iconCircleGPS}
-                            >
-                              <Icon name="map-marker-alt" size={18} color="#ffffff" />
-                            </Pressable>
-                          </View>
-
-
-                    </View>
-                  </View>
-                )}
-              />
               <Pressable style={styles.closeButton} onPress={() => setModalVisible(false)}>
                 <Text style={{ color: 'white' }}>Cerrar</Text>
               </Pressable>
@@ -186,7 +202,7 @@ const ciudadesFiltradas = ciudades.filter((ciudad) => {
 const styles = StyleSheet.create({
   background: { flex: 1 },
   overlay: { flex: 1 },
-  loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+ 
   header: {
     backgroundColor: '#002C73',
     alignItems: 'center',
@@ -194,6 +210,26 @@ const styles = StyleSheet.create({
    paddingVertical: 40,
     position: 'relative',
   },
+
+  headerContainer: {
+  backgroundColor: '#002C73',
+  paddingTop: 95, // ajusta según el notch
+  paddingBottom: 16,
+  paddingHorizontal: 18,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
+},
+headerCenter: {
+ position: 'absolute',
+  top: 43,
+  left: 10,
+  right: 0,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
   headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold',marginTop: 15, },
   container: { padding: 16 },
   card: {
@@ -303,5 +339,22 @@ buscador: {// buscador de ciudades
   color: '#000',
 },
 
+loadingCiudadesContainer: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginVertical: 20,
+},
+loaderContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+loadingText: {
+  marginTop: 10,
+  color: '#002C73',
+  fontSize: 16,
+  fontWeight: '600',
+},
 
 });
