@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './src/screens/HomeScreen';
 import PaisesScreen from './src/screens/PaisesScreens';
 import SplashScreen from './src/screens/SplashScreen';
-
+import TVOnlineScreen from './src/screens/TVOnlineScreen'; // ajusta ruta si es necesario
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -15,6 +15,11 @@ export default function App() {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Paises" component={PaisesScreen} />
+         <Stack.Screen
+    name="TVOnline"
+    component={TVOnlineScreen}
+    options={{ headerShown: false }}
+  />
       </Stack.Navigator>
     </NavigationContainer>
   );

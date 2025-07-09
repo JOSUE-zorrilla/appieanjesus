@@ -17,6 +17,7 @@ type RootStackParamList = {
   Splash: undefined;
   Home: undefined;
   Paises: undefined;
+   TVOnline: undefined;
 };
 
 const items = [
@@ -62,7 +63,9 @@ export default function HomeScreen() {
                 onPress={() => {
                   if (item.label === 'DIRECTORIO EXTRANJERO') {
                     navigation.navigate('Paises'); // ✅ navegación correcta
-                  } else {
+                    } else if (item.label === 'TV ONLINE') {
+                  navigation.navigate('TVOnline');
+                }  else {
                     console.log('Presionaste:', item.label);
                   }
                 }}
@@ -72,6 +75,7 @@ export default function HomeScreen() {
 
               <Text style={styles.iconText}>{item.label}</Text>
             </View>
+            
           ))}
         </ScrollView>
 

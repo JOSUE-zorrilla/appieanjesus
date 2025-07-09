@@ -16,6 +16,8 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { TextInput } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+
 
 interface Pais {
   id_paises: string;
@@ -87,9 +89,9 @@ const ciudadesFiltradas = ciudades.filter((ciudad) => {
     >
       <SafeAreaView style={styles.overlay}>
         <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
-  <Icon name="arrow-left" size={20} color="white" />
-</Pressable>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Icon name="arrow-left" size={18} color="#002C73" />
+          </TouchableOpacity>
 
           <Text style={styles.headerTitle}>DIRECTORIO EXTRANJERO</Text>
         </View>
@@ -125,7 +127,7 @@ const ciudadesFiltradas = ciudades.filter((ciudad) => {
               <Text style={styles.modalTitle}>Ciudades</Text>
                 {/* 🔽 Aquí pones el TextInput antes del FlatList */}
                 <TextInput
-                  placeholder="Buscar ciudad..."
+                  placeholder="Buscar ciudad o nombre..."
                   placeholderTextColor="#888"
                   style={styles.buscador}
                   value={busquedaCiudad}
@@ -189,10 +191,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#002C73',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+   paddingVertical: 40,
     position: 'relative',
   },
-  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold' },
+  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold',marginTop: 15, },
   container: { padding: 16 },
   card: {
     backgroundColor: '#f5f7fa',
@@ -250,12 +252,21 @@ const styles = StyleSheet.create({
   
  backButton: {
   position: 'absolute',
-  left: 16,
   top: 50,
-  padding: 8,
-  backgroundColor: 'rgba(255,255,255,0.2)', // opcional: fondo suave
-  borderRadius: 8,
+  left: 16,
+  width: 40,
+  height: 40,
+  backgroundColor: '#fff',
+  borderRadius: 20, // completamente redondo
+  justifyContent: 'center',
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 3,
+  elevation: 4, // para Android
 },
+
 
 // elimina backText si ya no lo usas
  row: {
