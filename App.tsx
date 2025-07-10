@@ -6,7 +6,9 @@ import HomeScreen from './src/screens/HomeScreen';
 import PaisesScreen from './src/screens/PaisesScreens';
 import SplashScreen from './src/screens/SplashScreen';
 import TVOnlineScreen from './src/screens/TVOnlineScreen'; // ajusta ruta si es necesario
-import RadioOnlineScreen from './src/screens/RadioOnlineScreen'; // ajusta ruta si es necesario
+import RadioOnlineScreen from './src/screens/RadioOnlineScreen';
+import Biblia from './src/screens/Biblia'; // ajusta ruta si es necesario
+ // ajusta ruta si es necesario
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -26,7 +28,9 @@ export default function App() {
           component={RadioOnlineScreen}
           options={{ headerShown: false }}
         />
+         <Stack.Screen name="Biblia" component={Biblia} />
       </Stack.Navigator>
+     
     </NavigationContainer>
   );
 }
