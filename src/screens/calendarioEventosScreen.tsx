@@ -38,6 +38,16 @@ export default function CalendarioEventosScreen() {
     );
   });
 
+  const fechasMarcadas = eventos.reduce((acc, evento) => {
+  const fecha = evento.fecha.split('T')[0]; // formato: YYYY-MM-DD
+  acc[fecha] = {
+    marked: true,
+    dotColor: '#002C73', // color del punto
+    activeOpacity: 0,
+  };
+  return acc;
+}, {} as Record<string, any>);
+
   const onDayPress = (day: any) => {
     setFechaSeleccionada(day.dateString); // formato: YYYY-MM-DD
     navigation.navigate('Eventos', { fecha: day.dateString });
@@ -53,27 +63,21 @@ export default function CalendarioEventosScreen() {
       </View>
 
       <View style={styles.calendarWrapper}>
-        <Calendar
-          onDayPress={onDayPress}
-          markedDates={{
-            ...(fechaSeleccionada && {
-              [fechaSeleccionada]: {
-                selected: true,
-                marked: true,
-                selectedColor: '#002C73',
-              },
-            }),
-          }}
-          theme={{
-            selectedDayBackgroundColor: '#002C73',
-            todayTextColor: '#002C73',
-            arrowColor: '#002C73',
-            textDayFontFamily: 'System',
-            textMonthFontFamily: 'System',
-            textDayHeaderFontFamily: 'System',
-            monthTextColor: '#002C73',
-          }}
-        />
+       <Calendar
+  onDayPress={(day) => {
+    setFechaSeleccionada(new Date(day.dateString));
+    navigation.navigate('Eventos', { fecha: day.dateString });
+  }}
+  markedDates={fechasMarcadas}
+  theme={{
+    selectedDayBackgroundColor: '#002C73',
+    todayTextColor: '#002C73',
+    dotColor: '#002C73',
+    arrowColor: '#002C73',
+    textSectionTitleColor: '#002C73',
+  }}
+/>
+
       </View>
 
       <Text style={styles.subTitle}>No te lo pierdas</Text>
