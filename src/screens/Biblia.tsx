@@ -31,10 +31,17 @@ const Biblia = ({ navigation }: Props) => {
   const libros = testamento === 'antiguo' ? librosAntiguo : librosNuevo;
 
   const renderLibro = ({ item }: { item: string }) => (
-    <TouchableOpacity style={styles.libro}>
-      <Text style={styles.libroTexto}>{item}</Text>
-      <Ionicons name="chevron-forward" size={20} color="#001f54" />
-    </TouchableOpacity>
+   <TouchableOpacity
+  style={styles.libro}
+  onPress={() => navigation.navigate('Capitulos', {
+    bookId: 'JHN', // usa el id correcto del libro
+    nombreLibro: 'San Juan'
+  })}
+>
+  <Text style={styles.libroTexto}>{item}</Text>
+  <Ionicons name="chevron-forward" size={20} color="#001f54" />
+</TouchableOpacity>
+
   );
 
   return (

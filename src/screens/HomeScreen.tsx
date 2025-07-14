@@ -20,6 +20,7 @@ type RootStackParamList = {
    TVOnline: undefined;
    RadioOnline: undefined;
    Biblia: undefined;
+   Eventos: undefined;
 };
 
 const items = [
@@ -72,6 +73,8 @@ export default function HomeScreen() {
                     navigation.navigate('RadioOnline');
                 } else if (item.label === 'BIBLIA') {
                     navigation.navigate('Biblia');
+                }  else if (item.label === 'EVENTOS') {
+                    navigation.navigate('Eventos');
                 } else {
                     console.log('Presionaste:', item.label);
                   }
