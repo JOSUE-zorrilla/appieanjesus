@@ -10,6 +10,7 @@ import RadioOnlineScreen from './src/screens/RadioOnlineScreen';
 import Biblia from './src/screens/Biblia'; 
 import CapitulosScreen from './src/screens/CapitulosScreen'; 
 import EventosScreen from './src/screens/EventosScreen'; // ajusta ruta si es necesario
+import CalendarioEventosScreen from './src/screens/calendarioEventosScreen'; // ajusta ruta si es necesario
  // ajusta ruta si es necesario
 // ajusta ruta si es necesario
 
@@ -36,6 +37,7 @@ export default function App() {
          <Stack.Screen name="Biblia" component={Biblia} />
         
         <Stack.Screen name="Eventos" component={EventosScreen} />
+        <Stack.Screen name="CalendarioEventos" component={CalendarioEventosScreen} />
       </Stack.Navigator>
      
     </NavigationContainer>
