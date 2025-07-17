@@ -20,11 +20,12 @@ import { TouchableOpacity } from 'react-native';
 
 
 interface Pais {
-  id_paises: string;
-  Nombre: string;
-  Misionero: string;
-  Bandera: string;
+  id_pais: string;
+  nombre: string;
+  misionero: string;
+  bandera: string;
 }
+
 
 export default function PaisesScreen() {
   const [paises, setPaises] = useState<Pais[]>([]);
@@ -36,36 +37,37 @@ export default function PaisesScreen() {
   const [busquedaCiudad, setBusquedaCiudad] = useState('');
 const [loadingCiudades, setLoadingCiudades] = useState(false);
 
-  useEffect(() => {
-    axios
-      .get('https://ieanjesus.org.ec/api/paises')
-      .then((response) => {
-        setPaises(response.data.data);
-      })
-      .catch((error) => {
-        console.error('Error al obtener países:', error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+useEffect(() => {
+  axios
+    .get('https://ieanjesus.org.ec/sistemacomites/api/paises')
+    .then((response) => {
+      setPaises(response.data.data);
+    })
+    .catch((error) => {
+      console.error('Error al obtener países:', error);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+}, []);
 
 const abrirModalCiudades = async (idPais: string) => {
   try {
     setLoadingCiudades(true);
     setModalVisible(true);
     setPaisSeleccionado(idPais);
+    setCiudades([]);
 
-    setCiudades([]); // ✅ limpia antes de cargar
-
-    const response = await axios.get(`https://ieanjesus.org.ec/api/ciudades?id_pais=${idPais}`);
-    setCiudades(response.data.data);
+    const response = await axios.get(`https://ieanjesus.org.ec/sistemacomites/api/paises?id=${idPais}`);
+    const ciudadesData = response.data.data.ciudades;
+    setCiudades(ciudadesData);
   } catch (error) {
     console.error('Error al cargar ciudades:', error);
   } finally {
     setLoadingCiudades(false);
   }
 };
+
 
 
 
@@ -112,16 +114,16 @@ if (loading) {
 
         <FlatList
           data={paises}
-          keyExtractor={(item) => item.id_paises}
+          keyExtractor={(item) => item.id_pais}
           contentContainerStyle={styles.container}
           renderItem={({ item }) => (
-            <Pressable onPress={() => abrirModalCiudades(item.id_paises)}>
+            <Pressable onPress={() => abrirModalCiudades(item.id_pais)}>
               <View style={styles.card}>
-                <Image source={{ uri: item.Bandera }} style={styles.flag} />
+                <Image source={{ uri: item.bandera }} style={styles.flag} />
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.name}>{item.Nombre}</Text>
+                  <Text style={styles.name}>{item.nombre}</Text>
                   <Text style={styles.misionero}>
-                    Misionero: <Text style={styles.bold}>{item.Misionero}</Text>
+                    Misionero: <Text style={styles.bold}>{item.misionero}</Text>
                   </Text>
                 </View>
               </View>
@@ -155,10 +157,10 @@ if (loading) {
 ) : (
   <FlatList
     data={ciudadesFiltradas}
-    keyExtractor={(item) => item.id.toString()}
+    keyExtractor={(item) => item.id_ciudad.toString()}
     renderItem={({ item }) => (
       <View style={styles.cityCard}>
-        <Image source={{ uri: item.foto }} style={styles.cityImage} />
+        <Image source={{ uri: item.foto_perfil }} style={styles.cityImage} />
         <View style={{ flex: 1 }}>
           <Text style={styles.name}>{item.nombre}</Text>
           <Text style={styles.misionero}>Pastor: {item.pastor}</Text>

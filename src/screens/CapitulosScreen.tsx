@@ -6,6 +6,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 type RootStackParamList = {
   Capitulos: { bookId: string; nombreLibro: string };
   Biblia: undefined
+  Versiculos: { chapterId: string; nombreLibro: string };
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Capitulos'>;
@@ -46,7 +47,18 @@ interface Capitulo {
   }, [bookId]);
 
  const renderItem = ({ item }: { item: Capitulo }) => (
-  <TouchableOpacity style={styles.capitulo}>
+  <TouchableOpacity
+    style={styles.capitulo}
+    onPress={() =>
+  navigation.navigate('Versiculos',  {
+    chapterId: item.id,
+    nombreLibro: item.reference,
+    
+  })
+  
+}
+
+  >
     <Text style={styles.capituloTexto}>Capítulo {item.number}</Text>
     <Ionicons name="chevron-forward" size={20} color="#001f54" />
   </TouchableOpacity>

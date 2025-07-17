@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -19,9 +27,9 @@ const EventosScreen = () => {
   const fechaSeleccionada = (route.params as any)?.fecha || null;
 
   useEffect(() => {
-    fetch('http://192.168.0.107/sistemaComitesIeanJesus/api/eventos.php')
-      .then(res => res.json())
-      .then(data => {
+    fetch('https://ieanjesus.org.ec/sistemacomites/api/eventos.php')
+      .then((res) => res.json())
+      .then((data) => {
         const eventosFiltrados = data.data.filter((evento: Evento) => {
           if (!fechaSeleccionada) return true;
           const fechaEvento = new Date(evento.fecha).toISOString().split('T')[0];
@@ -30,7 +38,7 @@ const EventosScreen = () => {
         setEventos(eventosFiltrados);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error al cargar eventos:', err);
         setLoading(false);
       });
@@ -46,11 +54,16 @@ const EventosScreen = () => {
   };
 
   if (loading) {
-    return <ActivityIndicator style={{ flex: 1 }} size="large" color="#0000ff" />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#002C73" />
+      </View>
+    );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name="arrow-left" size={18} color="#002C73" />
@@ -60,33 +73,56 @@ const EventosScreen = () => {
         </View>
       </View>
 
-      {eventos.length === 0 ? (
-        <Text style={{ textAlign: 'center', marginTop: 50, fontSize: 16, color: '#666' }}>
-          No hay eventos para esta fecha.
-        </Text>
-      ) : (
-        eventos.map((evento) => (
-          <View key={evento.id} style={styles.card}>
-            <Image source={{ uri: evento.imagen }} style={styles.image} />
-            <Text style={styles.title}>{evento.titulo}</Text>
-            <Text style={styles.date}>Próximamente: {formatearFecha(evento.fecha)}</Text>
-            <Text style={styles.text}>{evento.texto}</Text>
-          </View>
-        ))
-      )}
+      {/* Contenido */}
+      <View style={styles.content}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {eventos.length === 0 ? (
+            <Text style={styles.emptyText}>
+              No hay eventos para esta fecha.
+            </Text>
+          ) : (
+            eventos.map((evento) => (
+              <View key={evento.id} style={styles.card}>
+                <Image source={{ uri: evento.imagen }} style={styles.image} />
+                <Text style={styles.title}>{evento.titulo}</Text>
+                <Text style={styles.date}>Próximamente: {formatearFecha(evento.fecha)}</Text>
+                <Text style={styles.text}>{evento.texto}</Text>
+              </View>
+            ))
+          )}
+        </ScrollView>
+      </View>
 
+      {/* Footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>© IEANJESUS ECUADOR - 2025</Text>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     flex: 1,
-    paddingHorizontal: 0,
+    backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 16,
+    color: '#666',
   },
   headerContainer: {
     backgroundColor: '#002C73',
@@ -111,6 +147,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginTop: 15,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 16,
+    width: 40,
+    height: 40,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   card: {
     backgroundColor: '#F8F9FF',
@@ -155,22 +207,6 @@ const styles = StyleSheet.create({
   footerText: {
     color: '#fff',
     fontSize: 12,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 16,
-    width: 40,
-    height: 40,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
   },
 });
 

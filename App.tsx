@@ -10,12 +10,19 @@ import RadioOnlineScreen from './src/screens/RadioOnlineScreen';
 import Biblia from './src/screens/Biblia'; 
 import CapitulosScreen from './src/screens/CapitulosScreen'; 
 import EventosScreen from './src/screens/EventosScreen'; // ajusta ruta si es necesario
-import CalendarioEventosScreen from './src/screens/calendarioEventosScreen'; // ajusta ruta si es necesario
+import CalendarioEventosScreen from './src/screens/calendarioEventosScreen'; 
+import { RootStackParamList } from './src/screens/types'; // ajusta si está en otra ruta
+import VersiculosScreen from './src/screens/VersiculosScreen'; // ajusta ruta si es necesario
+import VersiculoCompletoScreen from './src/screens/versiculosCompletosScreem'; // ajusta ruta si es necesario
+import BuscarScreen from './src/screens/BuscarScreen';
+
+// ajusta ruta si es necesario
  // ajusta ruta si es necesario
 // ajusta ruta si es necesario
 
  // ajusta ruta si es necesario
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
 
 export default function App() {
   return (
@@ -24,6 +31,9 @@ export default function App() {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Paises" component={PaisesScreen} />
+        <Stack.Screen name="Buscar" component={BuscarScreen} />
+
+        
          <Stack.Screen
     name="TVOnline"
     component={TVOnlineScreen}
@@ -38,7 +48,11 @@ export default function App() {
         
         <Stack.Screen name="Eventos" component={EventosScreen} />
         <Stack.Screen name="CalendarioEventos" component={CalendarioEventosScreen} />
+        <Stack.Screen name="Capitulos" component={CapitulosScreen} />
+        <Stack.Screen name="Versiculos" component={VersiculosScreen} />
+        <Stack.Screen name="VersiculoCompleto" component={VersiculoCompletoScreen} />
       </Stack.Navigator>
+
      
     </NavigationContainer>
   );

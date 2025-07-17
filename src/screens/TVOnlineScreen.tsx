@@ -17,7 +17,7 @@ export default function TVOnlineScreen() {
   const [programas, setProgramas] = useState([]);
 
 useEffect(() => {
-  fetch('http://192.168.0.107/sistemaComitesIeanJesus/api/programas_tv.php')
+  fetch('https://ieanjesus.org.ec/sistemacomites/api/programas_tv')
     .then(res => res.json())
     .then(data => {
       // Ordenar por fecha y hora
