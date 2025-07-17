@@ -22,6 +22,7 @@ type RootStackParamList = {
    Biblia: undefined;
    Eventos: undefined;
    CalendarioEventos: undefined;
+   RecursosGraficos : undefined; 
 };
 
 const items = [
@@ -76,7 +77,11 @@ export default function HomeScreen() {
                     navigation.navigate('Biblia');
                 }  else if (item.label === 'EVENTOS') {
                     navigation.navigate('CalendarioEventos');
-                } else {
+                }else if (item.label === 'RECURSOS GRÁFICOS') {
+  navigation.navigate('RecursosGraficos');
+}
+
+                 else {
                     console.log('Presionaste:', item.label);
                   }
                 }}

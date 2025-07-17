@@ -11,6 +11,52 @@ import { Calendar } from 'react-native-calendars';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
+import { LocaleConfig } from 'react-native-calendars';
+
+LocaleConfig.locales['es'] = {
+  monthNames: [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ],
+  monthNamesShort: [
+    'Ene',
+    'Feb',
+    'Mar',
+    'Abr',
+    'May',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dic',
+  ],
+  dayNames: [
+    'Domingo',
+    'Lunes',
+    'Martes',
+    'Miércoles',
+    'Jueves',
+    'Viernes',
+    'Sábado',
+  ],
+  dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+  today: 'Hoy',
+};
+
+LocaleConfig.defaultLocale = 'es';
+
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -28,7 +74,7 @@ interface Evento {
 export default function CalendarioEventosScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [eventos, setEventos] = useState<Evento[]>([]);
-  const [fechaSeleccionada, setFechaSeleccionada] = useState<string | null>(null);
+  const [mesVisible, setMesVisible] = useState(new Date());
 
   useEffect(() => {
     fetch('https://ieanjesus.org.ec/sistemacomites/api/eventos')
@@ -37,21 +83,20 @@ export default function CalendarioEventosScreen() {
       .catch((err) => console.error('Error al cargar eventos:', err));
   }, []);
 
-  const eventosDelMes: Evento[] = eventos.filter((evento) => {
+  const eventosDelMes = eventos.filter((evento) => {
     const fecha = new Date(evento.fecha);
-    const hoy = new Date();
     return (
-      fecha.getMonth() === hoy.getMonth() &&
-      fecha.getFullYear() === hoy.getFullYear()
+      fecha.getMonth() === mesVisible.getMonth() &&
+      fecha.getFullYear() === mesVisible.getFullYear()
     );
   });
 
   const fechasMarcadas = eventos.reduce((acc, evento) => {
     const fecha = evento.fecha.split('T')[0];
     acc[fecha] = {
-      marked: true,
-      dotColor: '#002C73',
-      activeOpacity: 0,
+      selected: true,
+      selectedColor: '#002C73',
+      selectedTextColor: '#fff',
     };
     return acc;
   }, {} as Record<string, any>);
@@ -77,8 +122,11 @@ export default function CalendarioEventosScreen() {
           <View style={styles.calendarWrapper}>
             <Calendar
               onDayPress={(day) => {
-                setFechaSeleccionada(day.dateString);
                 navigation.navigate('Eventos', { fecha: day.dateString });
+              }}
+              onMonthChange={(month) => {
+                const nuevaFecha = new Date(month.year, month.month - 1);
+                setMesVisible(nuevaFecha);
               }}
               markedDates={fechasMarcadas}
               theme={{
@@ -93,25 +141,38 @@ export default function CalendarioEventosScreen() {
 
           <Text style={styles.subTitle}>No te lo pierdas</Text>
 
-          {eventosDelMes.map((evento) => (
-            <View key={evento.id} style={styles.eventoRow}>
-              <View>
-                <Text style={styles.eventoTitulo}>{evento.titulo}</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate('Eventos', { fecha: evento.fecha })
-                }
-              >
-                <Text style={styles.eventoFecha}>
-                  {new Date(evento.fecha).toLocaleDateString('es-EC', {
-                    day: '2-digit',
-                    month: '2-digit',
-                  })}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+          {eventosDelMes.length === 0 ? (
+  <Text style={styles.emptyText}>No hay eventos para este mes.</Text>
+) : (
+ eventosDelMes
+  .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
+  .map((evento) => (
+    <TouchableOpacity
+      key={evento.id}
+      style={styles.eventoRow}
+      onPress={() => navigation.navigate('Eventos', { fecha: evento.fecha })}
+    >
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
+        <Text style={styles.eventoTitulo}>{evento.titulo}</Text>
+        <Text style={styles.eventoFecha}>
+          {(() => {
+            const [anio, mes, dia] = evento.fecha.split('T')[0].split('-');
+            const fechaReal = new Date(Number(anio), Number(mes) - 1, Number(dia));
+            return fechaReal
+              .toLocaleDateString('es-EC', {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+              })
+              .replace(/^./, (str) => str.toUpperCase());
+          })()}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  ))
+
+)}
+
         </ScrollView>
       </View>
 
@@ -172,7 +233,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
-    textAlign: 'center',
+    marginTop: 15,
   },
   calendarWrapper: {
     marginVertical: 10,
@@ -185,6 +246,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     color: '#002C73',
     textAlign: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 15,
+    color: '#666',
   },
   eventoRow: {
     flexDirection: 'row',

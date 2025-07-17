@@ -11,6 +11,8 @@ export type RootStackParamList = {
 Versiculos: { chapterId: string; nombreLibro: string }; // 
    VersiculoCompleto: { chapterId: string; scrollToVerse?: string }; // para el versículo completo
 Buscar: undefined;
+RecursosGraficos: undefined;
+
 
 
 

@@ -15,6 +15,7 @@ import { RootStackParamList } from './src/screens/types'; // ajusta si está en 
 import VersiculosScreen from './src/screens/VersiculosScreen'; // ajusta ruta si es necesario
 import VersiculoCompletoScreen from './src/screens/versiculosCompletosScreem'; // ajusta ruta si es necesario
 import BuscarScreen from './src/screens/BuscarScreen';
+import RecursosGraficosScreen from './src/screens/RecursosGraficosScreen';
 
 // ajusta ruta si es necesario
  // ajusta ruta si es necesario
@@ -51,6 +52,8 @@ export default function App() {
         <Stack.Screen name="Capitulos" component={CapitulosScreen} />
         <Stack.Screen name="Versiculos" component={VersiculosScreen} />
         <Stack.Screen name="VersiculoCompleto" component={VersiculoCompletoScreen} />
+        <Stack.Screen name="RecursosGraficos" component={RecursosGraficosScreen} />
+
       </Stack.Navigator>
 
      
