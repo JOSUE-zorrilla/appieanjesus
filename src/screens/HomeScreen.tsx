@@ -23,6 +23,7 @@ type RootStackParamList = {
    Eventos: undefined;
    CalendarioEventos: undefined;
    RecursosGraficos : undefined; 
+   Musica : undefined;
 };
 
 const items = [
@@ -79,9 +80,10 @@ export default function HomeScreen() {
                     navigation.navigate('CalendarioEventos');
                 }else if (item.label === 'RECURSOS GRÁFICOS') {
   navigation.navigate('RecursosGraficos');
-}
+} else if (item.label === 'MÚSICA') {
+                    navigation.navigate('Musica');
 
-                 else {
+                 } else {
                     console.log('Presionaste:', item.label);
                   }
                 }}

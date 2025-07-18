@@ -23,7 +23,7 @@ export default function RecursosGraficosScreen() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetch('http://192.168.0.107/sistemaComitesIeanJesus/api/recursos.php')
+    fetch('https://ieanjesus.org.ec/sistemacomites/api/recursos')
       .then((res) => res.json())
       .then((data) => setRecursos(data.data))
       .catch((err) => console.error('Error al cargar recursos:', err));
@@ -34,7 +34,7 @@ export default function RecursosGraficosScreen() {
       {/* Encabezado */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={20} color="#002C73" />
+          <Icon name="arrow-left" size={18} color="#002C73" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>RECURSOS GRÁFICOS</Text>
       </View>
@@ -45,7 +45,10 @@ export default function RecursosGraficosScreen() {
         ) : (
           recursos.map((recurso) => (
             <View key={recurso.id} style={styles.card}>
-              <Text style={styles.titulo}>{recurso.titulo}</Text>
+              <View style={styles.cardHeader}>
+                <Icon name="file-alt" size={20} color="#002C73" style={{ marginRight: 8 }} />
+                <Text style={styles.titulo}>{recurso.titulo}</Text>
+              </View>
               <Text style={styles.descripcion}>{recurso.descripcion}</Text>
               <Text style={styles.fecha}>
                 📅{' '}
@@ -60,6 +63,7 @@ export default function RecursosGraficosScreen() {
                 style={styles.button}
                 onPress={() => Linking.openURL(recurso.url)}
               >
+                <Icon name="eye" size={14} color="#fff" style={{ marginRight: 6 }} />
                 <Text style={styles.buttonText}>Ver documento</Text>
               </TouchableOpacity>
             </View>
@@ -75,62 +79,90 @@ export default function RecursosGraficosScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#f9f9f9' },
   header: {
     backgroundColor: '#002C73',
-    paddingTop: 90,
+    paddingTop: 100,
     paddingBottom: 20,
     paddingHorizontal: 20,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
   },
   backButton: {
     position: 'absolute',
-    top: 95,
     left: 20,
+    top: 60,
     backgroundColor: '#fff',
     padding: 8,
     borderRadius: 20,
-    elevation: 3,
+    elevation: 4,
+     zIndex: 2, 
   },
   headerTitle: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
+  color: '#fff',
+  fontSize: 22,
+  fontWeight: 'bold',
+  textAlign: 'center',
+  position: 'absolute',
+  top: 65, // Súbelo aquí ajustando este valor
+  left: 0,
+  right: 0,
+   pointerEvents: 'none'
+},
+
   scrollContainer: {
     padding: 20,
   },
   card: {
-    backgroundColor: '#e9f0ff',
-    padding: 16,
+    backgroundColor: '#fff',
+    padding: 15,
     borderRadius: 12,
     marginBottom: 20,
     borderLeftWidth: 5,
     borderLeftColor: '#002C73',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   titulo: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#002C73',
+    flex: 1,
+    flexWrap: 'wrap',
   },
   descripcion: {
     fontSize: 14,
     color: '#444',
-    marginTop: 5,
+    marginTop: 4,
+    marginBottom: 6,
   },
   fecha: {
     fontSize: 12,
     color: '#666',
-    marginTop: 5,
   },
   button: {
-    marginTop: 10,
+    marginTop: 12,
     backgroundColor: '#002C73',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
     alignSelf: 'flex-start',
   },
   buttonText: {
@@ -145,7 +177,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     backgroundColor: '#002C73',
-    padding: 25,
+    padding: 30,
     alignItems: 'center',
   },
   footerText: {

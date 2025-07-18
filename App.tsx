@@ -16,6 +16,7 @@ import VersiculosScreen from './src/screens/VersiculosScreen'; // ajusta ruta si
 import VersiculoCompletoScreen from './src/screens/versiculosCompletosScreem'; // ajusta ruta si es necesario
 import BuscarScreen from './src/screens/BuscarScreen';
 import RecursosGraficosScreen from './src/screens/RecursosGraficosScreen';
+import MusicaScreen from './src/screens/MusicaScreen';
 
 // ajusta ruta si es necesario
  // ajusta ruta si es necesario
@@ -53,6 +54,11 @@ export default function App() {
         <Stack.Screen name="Versiculos" component={VersiculosScreen} />
         <Stack.Screen name="VersiculoCompleto" component={VersiculoCompletoScreen} />
         <Stack.Screen name="RecursosGraficos" component={RecursosGraficosScreen} />
+        <Stack.Screen
+    name="Musica"
+    component={MusicaScreen}
+    options={{ headerShown: false }}
+  />
 
       </Stack.Navigator>
 
