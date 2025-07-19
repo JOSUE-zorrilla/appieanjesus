@@ -46,12 +46,15 @@ export default function MusicaScreen() {
   return (
     <View style={styles.container}>
       {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={18} color="#002C73" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>SECCIÓN MUSICAL</Text>
-      </View>
+       <View style={styles.headerContainer}>
+                  <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                  <Icon name="arrow-left" size={18} color="#002C73" />
+                </TouchableOpacity>
+      
+               <View style={styles.headerCenter}>
+                  <Text style={styles.headerTitle}>SECCIÓN MUSICAL</Text>
+                </View>
+              </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {canciones.length === 0 ? (
@@ -131,27 +134,44 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
   },
-  backButton: {
-    position: 'absolute',
-    left: 20,
-    top: 60,
-    backgroundColor: '#fff',
-    padding: 8,
-    borderRadius: 20,
-    elevation: 4,
-    zIndex: 2,
-  },
-  headerTitle: {
-    position: 'absolute',
-    top: 60,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#fff',
-    pointerEvents: 'none',
-  },
+headerCenter: {
+ position: 'absolute',
+  top: 43,
+  left: 10,
+  right: 0,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold',marginTop: 15, },
+  
+  headerContainer: {
+  backgroundColor: '#002C73',
+  paddingTop: 95, // ajusta según el notch
+  paddingBottom: 16,
+  paddingHorizontal: 18,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
+},
+backButton: {
+  position: 'absolute',
+  top: 50,
+  left: 16,
+  width: 40,
+  height: 40,
+  backgroundColor: '#fff',
+  borderRadius: 20, // completamente redondo
+  justifyContent: 'center',
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 3,
+  elevation: 4, // para Android
+},
+ 
   scrollContainer: {
     padding: 20,
   },

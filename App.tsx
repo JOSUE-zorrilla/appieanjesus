@@ -17,6 +17,9 @@ import VersiculoCompletoScreen from './src/screens/versiculosCompletosScreem'; /
 import BuscarScreen from './src/screens/BuscarScreen';
 import RecursosGraficosScreen from './src/screens/RecursosGraficosScreen';
 import MusicaScreen from './src/screens/MusicaScreen';
+import NoticiasScreen from './src/screens/NoticiasScreen';
+import NacionaScreen from './src/screens/NacionaScreen';
+
 
 // ajusta ruta si es necesario
  // ajusta ruta si es necesario
@@ -59,6 +62,10 @@ export default function App() {
     component={MusicaScreen}
     options={{ headerShown: false }}
   />
+  <Stack.Screen name="noticias" component={NoticiasScreen} />
+  <Stack.Screen name="nacional" component= {NacionaScreen} />
+
+ 
 
       </Stack.Navigator>
 

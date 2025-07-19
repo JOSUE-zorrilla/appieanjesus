@@ -14,6 +14,10 @@ Buscar: undefined;
 
 RecursosGraficos: undefined;
 Musica: undefined;
+noticias: undefined;
+nacional: undefined;
+
+
 
 
 
