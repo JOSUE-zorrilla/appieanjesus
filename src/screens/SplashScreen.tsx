@@ -18,7 +18,7 @@ export default function SplashScreen({ navigation }: Props) {
   useEffect(() => {
     Animated.timing(logoAnim, {
       toValue: 1,
-      duration: 1500,
+      duration: 600,
       useNativeDriver: true,
     }).start();
 

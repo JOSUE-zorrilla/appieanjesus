@@ -8,10 +8,10 @@ import {
   Image,
   Modal,
   Linking,
+  TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 interface Cancion {
   id: string;
@@ -29,6 +29,13 @@ export default function MusicaScreen() {
   const [canciones, setCanciones] = useState<Cancion[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [cancionSeleccionada, setCancionSeleccionada] = useState<Cancion | null>(null);
+  const [busqueda, setBusqueda] = useState('');
+  const [categorias, setCategorias] = useState<string[]>([]);
+  const [generos, setGeneros] = useState<string[]>([]);
+  const [notas, setNotas] = useState<string[]>([]);
+  const [filtro, setFiltro] = useState<{ categoria?: string; genero?: string; nota?: string }>({});
+  const [activeTab, setActiveTab] = useState<'categoria' | 'genero' | 'nota' | null>('categoria');
+
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -38,29 +45,83 @@ export default function MusicaScreen() {
       .catch((err) => console.error('Error al cargar música:', err));
   }, []);
 
+  useEffect(() => {
+    const categoriasUnicas = Array.from(new Set(canciones.map(c => c.categoria))).filter(Boolean);
+    const generosUnicos = Array.from(new Set(canciones.map(c => c.genero))).filter(Boolean);
+    const notasUnicas = Array.from(new Set(canciones.map(c => c.nota_cancion))).filter(Boolean);
+    setCategorias(categoriasUnicas);
+    setGeneros(generosUnicos);
+    setNotas(notasUnicas);
+  }, [canciones]);
+
   const abrirModal = (cancion: Cancion) => {
     setCancionSeleccionada(cancion);
     setModalVisible(true);
   };
 
+  const cancionesFiltradas = canciones.filter(c =>
+    c.nombre_cancion.toLowerCase().includes(busqueda.toLowerCase()) &&
+    (!filtro.categoria || c.categoria === filtro.categoria) &&
+    (!filtro.genero || c.genero === filtro.genero) &&
+    (!filtro.nota || c.nota_cancion === filtro.nota)
+  );
+
+  const valoresActivos = activeTab === 'categoria' ? categorias : activeTab === 'genero' ? generos : notas;
+
   return (
     <View style={styles.container}>
-      {/* HEADER */}
-       <View style={styles.headerContainer}>
-                  <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                  <Icon name="arrow-left" size={18} color="#002C73" />
-                </TouchableOpacity>
-      
-               <View style={styles.headerCenter}>
-                  <Text style={styles.headerTitle}>SECCIÓN MUSICAL</Text>
-                </View>
-              </View>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Icon name="arrow-left" size={18} color="#002C73" />
+        </TouchableOpacity>
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>SECCIÓN MUSICAL</Text>
+        </View>
+      </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {canciones.length === 0 ? (
+        <View style={styles.searchContainer}>
+          <Icon name="search" size={18} color="#002C73" style={{ marginRight: 8 }} />
+          <TextInput
+            placeholder="Buscar canción por nombre..."
+            value={busqueda}
+            onChangeText={setBusqueda}
+            style={styles.searchInput}
+            placeholderTextColor="#888"
+          />
+        </View>
+
+        <View style={styles.tabsContainer}>
+          <TouchableOpacity onPress={() => setActiveTab('categoria')}>
+            <Text style={[styles.tabText, activeTab === 'categoria' && styles.tabTextActive]}>CATEGORÍA</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setActiveTab('genero')}>
+            <Text style={[styles.tabText, activeTab === 'genero' && styles.tabTextActive]}>GÉNERO</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setActiveTab('nota')}>
+            <Text style={[styles.tabText, activeTab === 'nota' && styles.tabTextActive]}>NOTA</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
+          {valoresActivos.map((item) => (
+            <TouchableOpacity
+              key={item}
+              style={[styles.filtroBoton, filtro[activeTab!] === item && styles.filtroSeleccionado]}
+              onPress={() => setFiltro((prev) => ({
+                ...prev,
+                [activeTab!]: prev[activeTab!] === item ? undefined : item,
+              }))}
+            >
+              <Text style={[styles.filtroTexto, filtro[activeTab!] === item && { color: '#fff' }]}>{item}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {cancionesFiltradas.length === 0 ? (
           <Text style={styles.emptyText}>No hay canciones disponibles.</Text>
         ) : (
-          canciones.map((cancion) => (
+          cancionesFiltradas.map((cancion) => (
             <TouchableOpacity
               key={cancion.id}
               style={styles.card}
@@ -81,16 +142,12 @@ export default function MusicaScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <ScrollView>
-              <Image
-                source={{ uri: cancionSeleccionada?.imagen }}
-                style={styles.modalImage}
-              />
+              <Image source={{ uri: cancionSeleccionada?.imagen }} style={styles.modalImage} />
               <Text style={styles.modalTitle}>{cancionSeleccionada?.nombre_cancion}</Text>
               <Text style={styles.modalInfo}>Autor: {cancionSeleccionada?.autor}</Text>
               <Text style={styles.modalInfo}>Nota: {cancionSeleccionada?.nota_cancion}</Text>
               <Text style={styles.modalInfo}>Género: {cancionSeleccionada?.genero}</Text>
               <Text style={styles.modalLetra}>{cancionSeleccionada?.letra_cancion}</Text>
-
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => Linking.openURL(cancionSeleccionada!.url_cancion)}
@@ -98,7 +155,6 @@ export default function MusicaScreen() {
                 <Icon name="youtube" size={16} color="#fff" style={{ marginRight: 6 }} />
                 <Text style={styles.modalButtonText}>Ver en YouTube</Text>
               </TouchableOpacity>
-
               <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalCerrar}>
                 <Text style={styles.modalCerrarText}>Cerrar</Text>
               </TouchableOpacity>
@@ -106,24 +162,51 @@ export default function MusicaScreen() {
           </View>
         </View>
       </Modal>
+
       <View style={styles.footer}>
-                <Text style={styles.footerText}>© IEANJESUS ECUADOR - 2025</Text>
-              </View>
+        <Text style={styles.footerText}>© IEANJESUS ECUADOR - 2025</Text>
+      </View>
     </View>
   );
-  
 }
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9f9' },
-  header: {
+  scrollContainer: { padding: 20 },
+  headerContainer: {
     backgroundColor: '#002C73',
-    paddingTop: 100,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingTop: 95,
+    paddingBottom: 16,
+    paddingHorizontal: 18,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    elevation: 6,
+  },
+  headerCenter: {
+    position: 'absolute',
+    top: 43,
+    left: 10,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold', marginTop: 15 },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 16,
+    width: 40,
+    height: 40,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   footer: {
     backgroundColor: '#002C73',
@@ -134,46 +217,52 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
   },
-headerCenter: {
- position: 'absolute',
-  top: 43,
-  left: 10,
-  right: 0,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-
-  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold',marginTop: 15, },
-  
-  headerContainer: {
-  backgroundColor: '#002C73',
-  paddingTop: 95, // ajusta según el notch
-  paddingBottom: 16,
-  paddingHorizontal: 18,
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  position: 'relative',
-},
-backButton: {
-  position: 'absolute',
-  top: 50,
-  left: 16,
-  width: 40,
-  height: 40,
-  backgroundColor: '#fff',
-  borderRadius: 20, // completamente redondo
-  justifyContent: 'center',
-  alignItems: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.2,
-  shadowRadius: 3,
-  elevation: 4, // para Android
-},
- 
-  scrollContainer: {
-    padding: 20,
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderColor: '#002C73',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    height: 40,
+    marginBottom: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#002C73',
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    paddingBottom: 6,
+  },
+  tabText: {
+    fontSize: 14,
+    color: '#002C73',
+    fontWeight: 'bold',
+  },
+  tabTextActive: {
+    borderBottomWidth: 2,
+    borderColor: '#002C73',
+  },
+  filtroBoton: {
+    backgroundColor: '#E0E0E0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  filtroSeleccionado: {
+    backgroundColor: '#002C73',
+  },
+  filtroTexto: {
+    color: '#000',
+    fontWeight: '600',
   },
   card: {
     flexDirection: 'row',
