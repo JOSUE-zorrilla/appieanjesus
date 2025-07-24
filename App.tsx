@@ -19,6 +19,7 @@ import RecursosGraficosScreen from './src/screens/RecursosGraficosScreen';
 import MusicaScreen from './src/screens/MusicaScreen';
 import NoticiasScreen from './src/screens/NoticiasScreen';
 import NacionaScreen from './src/screens/NacionaScreen';
+import DirectorioNacionalScreen from './src/screens/DirectorioNacionalScreen';
 
 
 // ajusta ruta si es necesario
@@ -64,7 +65,11 @@ export default function App() {
   />
   <Stack.Screen name="noticias" component={NoticiasScreen} />
   <Stack.Screen name="nacional" component= {NacionaScreen} />
-
+<Stack.Screen 
+  name="DirectorioNacional" 
+  component={DirectorioNacionalScreen} 
+  options={{ title: 'Directorio Nacional' }} 
+/>
  
 
       </Stack.Navigator>

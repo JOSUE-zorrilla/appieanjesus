@@ -26,6 +26,7 @@ type RootStackParamList = {
    Musica : undefined;
    noticias : undefined;
    nacional : undefined;
+   DirectorioNacional: undefined;
 };
 
 const items = [
@@ -88,7 +89,7 @@ export default function HomeScreen() {
                  }else if (item.label === 'NOTICIAS') {
   navigation.navigate('noticias');
 }else if (item.label === 'DIRECTORIO NACIONAL') {
-  navigation.navigate('nacional');
+  navigation.navigate('DirectorioNacional');
 } else {
                     console.log('Presionaste:', item.label);
                   }

@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   headerCenter: {
+    
     position: 'absolute',
     top: 43,
     left: 10,
