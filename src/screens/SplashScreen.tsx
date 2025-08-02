@@ -18,13 +18,13 @@ export default function SplashScreen({ navigation }: Props) {
   useEffect(() => {
     Animated.timing(logoAnim, {
       toValue: 1,
-      duration: 600,
+      duration: 1500,
       useNativeDriver: true,
     }).start();
 
     const timer = setTimeout(() => {
       navigation.replace('Home'); // déjalo comentado por ahora para ver el splash tranquilo
-    }, 10000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
