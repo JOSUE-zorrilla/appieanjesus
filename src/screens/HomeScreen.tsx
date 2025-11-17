@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -17,23 +17,23 @@ type RootStackParamList = {
   Splash: undefined;
   Home: undefined;
   Paises: undefined;
-   TVOnline: undefined;
-   RadioOnline: undefined;
-   Biblia: undefined;
-   Eventos: undefined;
-   CalendarioEventos: undefined;
-   RecursosGraficos : undefined; 
-   Musica : undefined;
-   noticias : undefined;
-   nacional : undefined;
-   DirectorioNacional: undefined;
+  TVOnline: undefined;
+  RadioOnline: undefined;
+  Biblia: undefined;
+  Eventos: undefined;
+  CalendarioEventos: undefined;
+  RecursosGraficos: undefined;
+  Musica: undefined;
+  noticias: undefined;
+  nacional: undefined;
+  DirectorioNacional: undefined;
 };
 
 const items = [
   { label: 'DIRECTORIO NACIONAL', icon: require('../../assets/iconosimagen/directorio.png') },
   { label: 'DIRECTORIO EXTRANJERO', icon: require('../../assets/iconosimagen/extranjero.png') },
   { label: 'NOTICIAS', icon: require('../../assets/iconosimagen/noticias.png') },
-  { label: 'EVENTOS', icon: require('../../assets/iconosimagen/eventos.png') },
+  { label: 'POA', icon: require('../../assets/iconosimagen/eventos.png') },
   { label: 'RADIO ONLINE', icon: require('../../assets/iconosimagen/radio.png') },
   { label: 'TV ONLINE', icon: require('../../assets/iconosimagen/tv.png') },
   { label: 'BIBLIA', icon: require('../../assets/iconosimagen/biblia.png') },
@@ -44,8 +44,29 @@ const items = [
 const screenWidth = Dimensions.get('window').width;
 const boxSize = (screenWidth - 80) / 3;
 
+// ⚠️ Misma URL que en el Splash
+const LOGO_API_URL =
+  'https://ieanjesus.org.ec/sistemacomites/api/logo.php?iddepartamento=11';
+
 export default function HomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await fetch(LOGO_API_URL);
+        const json = await response.json();
+        if (json.status === 'success' && json.data && json.data.imagen_url) {
+          setLogoUrl(json.data.imagen_url as string);
+        }
+      } catch (error) {
+        console.log('Error cargando logo:', error);
+      }
+    };
+
+    fetchLogo();
+  }, []);
 
   return (
     <ImageBackground
@@ -57,7 +78,11 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Image
-            source={require('../../assets/iconosimagen/unidos.png')}
+            source={
+              logoUrl
+                ? { uri: logoUrl }
+                : require('../../assets/iconosimagen/unidos.png') // fallback
+            }
             style={styles.headerLogo}
             resizeMode="contain"
           />
@@ -71,26 +96,24 @@ export default function HomeScreen() {
                 style={styles.iconBox}
                 onPress={() => {
                   if (item.label === 'DIRECTORIO EXTRANJERO') {
-                    navigation.navigate('Paises'); // ✅ navegación correcta
-                    } else if (item.label === 'TV ONLINE') {
-                  navigation.navigate('TVOnline');
-                } 
-                else if (item.label === 'RADIO ONLINE') {
+                    navigation.navigate('Paises');
+                  } else if (item.label === 'TV ONLINE') {
+                    navigation.navigate('TVOnline');
+                  } else if (item.label === 'RADIO ONLINE') {
                     navigation.navigate('RadioOnline');
-                } else if (item.label === 'BIBLIA') {
+                  } else if (item.label === 'BIBLIA') {
                     navigation.navigate('Biblia');
-                }  else if (item.label === 'EVENTOS') {
+                  } else if (item.label === 'POA') {
                     navigation.navigate('CalendarioEventos');
-                }else if (item.label === 'RECURSOS GRÁFICOS') {
-  navigation.navigate('RecursosGraficos');
-} else if (item.label === 'MÚSICA') {
+                  } else if (item.label === 'RECURSOS GRÁFICOS') {
+                    navigation.navigate('RecursosGraficos');
+                  } else if (item.label === 'MÚSICA') {
                     navigation.navigate('Musica');
-
-                 }else if (item.label === 'NOTICIAS') {
-  navigation.navigate('noticias');
-}else if (item.label === 'DIRECTORIO NACIONAL') {
-  navigation.navigate('DirectorioNacional');
-} else {
+                  } else if (item.label === 'NOTICIAS') {
+                    navigation.navigate('noticias');
+                  } else if (item.label === 'DIRECTORIO NACIONAL') {
+                    navigation.navigate('DirectorioNacional');
+                  } else {
                     console.log('Presionaste:', item.label);
                   }
                 }}
@@ -100,7 +123,6 @@ export default function HomeScreen() {
 
               <Text style={styles.iconText}>{item.label}</Text>
             </View>
-            
           ))}
         </ScrollView>
 
