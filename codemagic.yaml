@@ -1,12 +1,38 @@
 workflows:
-  react-native:
-    name: React Native Build
+  react-native-android:
+    name: React Native Android
     environment:
       node: latest
     scripts:
       - name: Install dependencies
-        script: yarn install
+        script: |
+          yarn install
       - name: Build Android
-        script: cd android && ./gradlew assembleRelease
+        script: |
+          cd android
+          ./gradlew assembleRelease
     artifacts:
       - android/app/build/outputs/**/*.apk
+
+  react-native-ios:
+    name: React Native iOS
+    environment:
+      node: latest
+      ios_signing:
+        distribution_type: ad_hoc   # o app_store / development según lo que quieras
+    scripts:
+      - name: Install dependencies
+        script: |
+          yarn install
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install
+      - name: Build iOS .ipa
+        script: |
+          xcode-project use-profiles
+          xcode-project build-ipa \
+            --workspace "ios/ieanjesus.xcworkspace" \
+            --scheme "ieanjesus"
+    artifacts:
+      - build/ios/ipa/*.ipa
