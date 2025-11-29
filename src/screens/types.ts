@@ -17,7 +17,7 @@ Musica: undefined;
 noticias: undefined;
 nacional: undefined;
 DirectorioNacional: undefined;
-
+CrearNoticia: undefined; // ✅ Agrega esta línea
 
 
 

@@ -8,6 +8,7 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -44,24 +45,35 @@ const items = [
 const screenWidth = Dimensions.get('window').width;
 const boxSize = (screenWidth - 80) / 3;
 
-// ⚠️ Misma URL que en el Splash
+// URL de la API
 const LOGO_API_URL =
-  'https://ieanjesus.org.ec/sistemacomites/api/logo.php?iddepartamento=11';
+  'https://ieanjesus.org.ec/sistemacomites/api/logo.php?iddepartamento=201';
 
 export default function HomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLogo = async () => {
       try {
+        console.log('🔍 [HOME] Cargando logo desde API...');
         const response = await fetch(LOGO_API_URL);
         const json = await response.json();
-        if (json.status === 'success' && json.data && json.data.imagen_url) {
-          setLogoUrl(json.data.imagen_url as string);
+        
+        console.log('📦 [HOME] Respuesta completa:', JSON.stringify(json, null, 2));
+        
+        // ✅ Corregido: Buscar imagen_home_url directamente
+        if (json.status === 'success' && json.data && json.data.imagen_home_url) {
+          console.log('✅ [HOME] Logo cargado:', json.data.imagen_home_url);
+          setLogoUrl(json.data.imagen_home_url);
+        } else {
+          console.log('⚠️ [HOME] No se encontró logo home');
         }
       } catch (error) {
-        console.log('Error cargando logo:', error);
+        console.log('❌ [HOME] Error:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -77,15 +89,27 @@ export default function HomeScreen() {
       <View style={styles.overlay}>
         {/* Header */}
         <View style={styles.header}>
-          <Image
-            source={
-              logoUrl
-                ? { uri: logoUrl }
-                : require('../../assets/iconosimagen/unidos.png') // fallback
-            }
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
+          {loading ? (
+            <ActivityIndicator size="large" color="#fff" />
+          ) : logoUrl ? (
+            <Image
+              source={{ uri: logoUrl }}
+              style={styles.headerLogo}
+              resizeMode="contain"
+              onError={(error) => {
+                console.log('❌ [HOME] Error cargando imagen:', error.nativeEvent.error);
+              }}
+              onLoad={() => {
+                console.log('✅ [HOME] Imagen cargada correctamente');
+              }}
+            />
+          ) : (
+            <Image
+              source={require('../../assets/imagen/unidos.png')}
+              style={styles.headerLogo}
+              resizeMode="contain"
+            />
+          )}
         </View>
 
         {/* Icon grid */}
@@ -147,8 +171,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
+    minHeight: 140,
   },
   headerLogo: {
+    width: 180,
     height: 110,
     marginBottom: 0,
     marginTop: 20,

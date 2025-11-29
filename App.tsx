@@ -20,6 +20,7 @@ import MusicaScreen from './src/screens/MusicaScreen';
 import NoticiasScreen from './src/screens/NoticiasScreen';
 import NacionaScreen from './src/screens/NacionaScreen';
 import DirectorioNacionalScreen from './src/screens/DirectorioNacionalScreen';
+import CrearNoticiaScreen from './src/screens/CrearNoticiasScreen';
 
 
 // ajusta ruta si es necesario
@@ -58,19 +59,13 @@ export default function App() {
         <Stack.Screen name="Versiculos" component={VersiculosScreen} />
         <Stack.Screen name="VersiculoCompleto" component={VersiculoCompletoScreen} />
         <Stack.Screen name="RecursosGraficos" component={RecursosGraficosScreen} />
-        <Stack.Screen
-    name="Musica"
-    component={MusicaScreen}
-    options={{ headerShown: false }}
-  />
-  <Stack.Screen name="noticias" component={NoticiasScreen} />
-  <Stack.Screen name="nacional" component= {NacionaScreen} />
-<Stack.Screen 
-  name="DirectorioNacional" 
-  component={DirectorioNacionalScreen} 
-  options={{ title: 'Directorio Nacional' }} 
-/>
+        <Stack.Screen name="Musica"  component={MusicaScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="noticias" component={NoticiasScreen} />
+        <Stack.Screen name="nacional" component= {NacionaScreen} />
+        <Stack.Screen   name="DirectorioNacional"  component={DirectorioNacionalScreen}  options={{ title: 'Directorio Nacional' }} />
  
+<Stack.Screen   name="CrearNoticia"  component={CrearNoticiaScreen}  options={{ headerShown: false }}
+/>
 
       </Stack.Navigator>
 

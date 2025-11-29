@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface Noticia {
   id: string;
@@ -19,18 +20,31 @@ interface Noticia {
   texto: string;
 }
 
+type RootStackParamList = {
+  noticias: undefined;
+  CrearNoticia: undefined;
+  // ... otras rutas
+};
+
 export default function NoticiasScreen() {
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [noticiaSeleccionada, setNoticiaSeleccionada] = useState<Noticia | null>(null);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
+    cargarNoticias();
+  }, []);
+
+  const cargarNoticias = () => {
     fetch('https://ieanjesus.org.ec/sistemacomites/api/noticias')
       .then((res) => res.json())
-      .then((data) => setNoticias(data.data))
+      .then((data) => {
+        console.log('Noticias cargadas:', data);
+        setNoticias(data.data || []);
+      })
       .catch((err) => console.error('Error al cargar noticias:', err));
-  }, []);
+  };
 
   const abrirModal = (noticia: Noticia) => {
     setNoticiaSeleccionada(noticia);
@@ -43,7 +57,7 @@ export default function NoticiasScreen() {
     } else {
       return (
         <View style={[styles.cardImage, styles.placeholder]}>
-          <Text style={{ color: '#888' }}>Sin imagen</Text>
+          <Icon name="image" size={40} color="#ccc" />
         </View>
       );
     }
@@ -53,18 +67,22 @@ export default function NoticiasScreen() {
     <View style={styles.container}>
       {/* HEADER */}
       <View style={styles.headerContainer}>
-                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Icon name="arrow-left" size={18} color="#002C73" />
-                      </TouchableOpacity>
-            
-                     <View style={styles.headerCenter}>
-                        <Text style={styles.headerTitle}>NOTICIAS</Text>
-                      </View>
-                    </View>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Icon name="arrow-left" size={18} color="#002C73" />
+        </TouchableOpacity>
+
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>NOTICIAS</Text>
+        </View>
+      </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {noticias.length === 0 ? (
-          <Text style={styles.emptyText}>No hay noticias disponibles.</Text>
+          <View style={styles.emptyContainer}>
+            <Icon name="newspaper" size={60} color="#ccc" />
+            <Text style={styles.emptyText}>No hay noticias disponibles.</Text>
+            <Text style={styles.emptySubText}>¡Sé el primero en crear una!</Text>
+          </View>
         ) : (
           noticias.map((noticia) => (
             <View key={noticia.id} style={styles.card}>
@@ -90,7 +108,19 @@ export default function NoticiasScreen() {
             </View>
           ))
         )}
+
+        {/* Espacio extra para que el botón flotante no tape contenido */}
+        <View style={{ height: 80 }} />
       </ScrollView>
+
+      {/* BOTÓN FLOTANTE PARA CREAR NOTICIA */}
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={() => navigation.navigate('CrearNoticia')}
+        activeOpacity={0.8}
+      >
+        <Icon name="plus" size={24} color="#fff" />
+      </TouchableOpacity>
 
       {/* MODAL */}
       <Modal visible={modalVisible} transparent animationType="slide">
@@ -101,7 +131,7 @@ export default function NoticiasScreen() {
                 <Image source={{ uri: noticiaSeleccionada.imagen }} style={styles.modalImage} />
               ) : (
                 <View style={[styles.modalImage, styles.placeholder]}>
-                  <Text style={{ color: '#888' }}>Sin imagen</Text>
+                  <Icon name="image" size={50} color="#ccc" />
                 </View>
               )}
               <Text style={styles.modalTitle}>{noticiaSeleccionada?.titulo}</Text>
@@ -134,54 +164,41 @@ export default function NoticiasScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9f9' },
-  header: {
+  headerContainer: {
     backgroundColor: '#002C73',
+    paddingTop: 95,
+    paddingBottom: 16,
+    paddingHorizontal: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 70,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
     position: 'relative',
-    elevation: 6,
   },
-   headerContainer: {
-  backgroundColor: '#002C73',
-  paddingTop: 95, // ajusta según el notch
-  paddingBottom: 16,
-  paddingHorizontal: 18,
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  position: 'relative',
-},
-headerCenter: {
- position: 'absolute',
-  top: 43,
-  left: 10,
-  right: 0,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-
-  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold',marginTop: 15, },
-  
-backButton: {
-  position: 'absolute',
-  top: 50,
-  left: 16,
-  width: 40,
-  height: 40,
-  backgroundColor: '#fff',
-  borderRadius: 20, // completamente redondo
-  justifyContent: 'center',
-  alignItems: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.2,
-  shadowRadius: 3,
-  elevation: 4, // para Android
-},
+  headerCenter: {
+    position: 'absolute',
+    top: 43,
+    left: 10,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold', marginTop: 15 },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 16,
+    width: 40,
+    height: 40,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+  },
   scrollContainer: {
     padding: 20,
   },
@@ -221,11 +238,23 @@ backButton: {
     color: '#fff',
     fontWeight: 'bold',
   },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 100,
+  },
   emptyText: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 18,
     color: '#888',
-    marginTop: 50,
+    marginTop: 20,
+    fontWeight: 'bold',
+  },
+  emptySubText: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#aaa',
+    marginTop: 5,
   },
   modalOverlay: {
     flex: 1,
@@ -266,10 +295,14 @@ backButton: {
   modalCerrar: {
     marginTop: 15,
     alignItems: 'center',
+    backgroundColor: '#002C73',
+    padding: 12,
+    borderRadius: 8,
   },
   modalCerrarText: {
-    color: '#002C73',
+    color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   footer: {
     backgroundColor: '#002C73',
@@ -284,5 +317,22 @@ backButton: {
     backgroundColor: '#eee',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  // 🔥 BOTÓN FLOTANTE
+  floatingButton: {
+    position: 'absolute',
+    bottom: 90,
+    right: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#002C73',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
 });
