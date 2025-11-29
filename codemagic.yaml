@@ -19,7 +19,8 @@ workflows:
     environment:
       node: latest
       ios_signing:
-        distribution_type: ad_hoc   # o app_store / development según lo que quieras
+        distribution_type: development
+        bundle_identifier: org.reactjs.native.example.ieanjesus
     scripts:
       - name: Install dependencies
         script: |
