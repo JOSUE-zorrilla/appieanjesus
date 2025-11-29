@@ -1,0 +1,12 @@
+workflows:
+  react-native:
+    name: React Native Build
+    environment:
+      node: latest
+    scripts:
+      - name: Install dependencies
+        script: yarn install
+      - name: Build Android
+        script: cd android && ./gradlew assembleRelease
+    artifacts:
+      - android/app/build/outputs/**/*.apk
